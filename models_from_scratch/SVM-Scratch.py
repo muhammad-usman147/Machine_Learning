@@ -1,11 +1,15 @@
 import numpy as np
 import cvxopt
 from extras import create_dataset , plot_contour
+
+
 def linear_kernel(x,z):
     return np.dot(x,z.T)
 
 def polynomial(x,z,p= 5):
     return (1+np.dot(x,z.T)) ** p 
+
+
 def gaussian(x,z,sigma = 0.1):
     return np.exp(-np.linalg.norm(x-z, axis = 1)**2/ 2*(sigma**2))
 
@@ -16,11 +20,11 @@ class SVM():
 
     def fit(self,X,y):
         self.X = X 
-        self.Y = y
+        self.y  = y
         m , n = X.shape
 
         #calculating the kernel
-        self.K = np.zeros((m,n))
+        self.K = np.zeros((m,m))
 
         for i in range(m):
             self.K[i,:] = self.kernel(X[i,np.newaxis],
@@ -46,7 +50,7 @@ class SVM():
 
         for i in range(X.shape[0]):
             y_predict[i] = np.sum(self.alphas[sv]*self.y[sv,np.newaxis] *
-            self.kernel(X[i]), self.X[sv][:,np.newaxis])
+            self.kernel(X[i], self.X[sv])[:,np.newaxis])
 
         return np.sign(y_predict + self.b)
 
@@ -56,7 +60,7 @@ class SVM():
         sv = ((alphas > threshold) * (alphas < self.C)).flatten()
 
         self.w = np.dot(self.X[sv].T, alphas[sv]*self.y[sv,np.newaxis])
-        self.B = np.mean(self.y[sv,np.newaxis] - 
+        self.b = np.mean(self.y[sv,np.newaxis] - 
                         self.alphas[sv]*self.y[sv,np.newaxis]*self.K[sv,sv][:,np.newaxis])
 
         return sv
@@ -64,7 +68,8 @@ if __name__ == '__main__':
     np.random.seed(1)
     X,y = create_dataset(N = 50)
 
-    svm = SVM(kernel=gaussian).fit(X,y)
+    svm = SVM(kernel=gaussian)
+    svm.fit(X,y)
     y_pred = svm.predict(X)
-
+    plot_contour(X,y,svm)
     print(f'acc => {sum(y == y_pred)/y.shape[0]}' )
