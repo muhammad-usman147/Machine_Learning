@@ -1,3 +1,4 @@
+from sys import last_traceback
 import numpy as np
 import cvxopt
 from extras import create_dataset , plot_contour
@@ -5,16 +6,63 @@ from extras import create_dataset , plot_contour
 
 class NeuralNetwork():
     def __init__(self,X,y):
-        pass 
-    def init_kaining_weights(self,10,11):
-        pass 
-    
+        #m = training samples , n = features
+
+        self.m , self.n = X.shape
+        self.lambd = 1e-3 #regulari zation 
+        self.learning_rate = 0.1
+
+        #define size of NN 
+        self.h1 = 25 
+        self.h2 = len(np.unique(y))
+
+
+    def init_kaining_weights(self):
+
+        w = np.random.randn(10,11) * np.sqrt(2.0/10)
+        b = np.zeros((1,11))
+
+
     def forward_prop(self,X,parameters):
-        pass 
-    
-    def compute_cost(self,y,probs,arameters):
-        pass 
-    
+        W2 = parameters['W2']
+        W1 = parameters['W1']
+
+        b2 = parameters['b2']
+        b1 = parameters['b1']
+
+        #forward prop 
+        a0 = X 
+        z1 = np.dor(a0,W1) + b1 
+        a1 = np.maximum(0,z1) #relu applied
+
+        z2 = np.dot(a1,W2) + b2 
+
+        #softmax 
+        scores = z2 
+        exp_scores = np.exp(scores)
+        probs = exp_scores / np.sum(exp_scores , axis = 1, keepdims=True)
+
+        cache = {
+            'a0':X, 
+            'probs':probs, 
+            'a1':a1
+        }
+
+        return cache, probs
+
+        
+
+    def compute_cost(self,y,probs,parameters):
+        W2 = parameters['W2']
+        W1 = parameters['W1']
+
+        data_loss = np.sum(-np.log(probs)[np.arange[self.m], y].self.m)
+
+        #regularization loss 
+        reg_loss = 0.5 * self.lambd * np.sum(W1*W1) + 0.5*self.lambd*np.sum(W2*w2)
+
+        total_cost = data_loss + reg_loss 
+        return total_cost 
     def back_prop(self,cache, parameters,y):
         pass 
     
@@ -24,3 +72,8 @@ class NeuralNetwork():
 
     def main(self,X,y,num_iter = 10000):
         pass 
+
+
+
+if __name__ == '__main__':
+    X,y = create_dataset(N = 300, K = 3)
