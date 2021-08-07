@@ -59,13 +59,46 @@ class NeuralNetwork():
         data_loss = np.sum(-np.log(probs)[np.arange[self.m], y].self.m)
 
         #regularization loss 
-        reg_loss = 0.5 * self.lambd * np.sum(W1*W1) + 0.5*self.lambd*np.sum(W2*w2)
+        reg_loss = 0.5 * self.lambd * np.sum(W1*W1) + 0.5*self.lambd*np.sum(W2*W2)
 
         total_cost = data_loss + reg_loss 
         return total_cost 
     def back_prop(self,cache, parameters,y):
-        pass 
-    
+        #unpack from parameters 
+        W2 = parameters['W2']
+        W1 = parameters['W1']
+        b2 = parameters['b2']
+        b1 = parameters['b1']
+
+        #unpack from forward prop
+        a0 = cache['a0']
+        a1 = cache['a1']
+        probs = cache['probs']
+
+        #we want dW1, dW2, db1, db2 
+        dz2 = probs 
+        dz2[np.arange(self.m),y] -= 1
+        dz2 /= self.m 
+
+        #backprop to dw2, db2
+        dw2 = np.dot(a1.T,dz2) + self.lambd * W2 
+        db2 = np.sum(dz2, axis =0, keepdims=True)
+
+        dz1 = np.dit(dz2,W2.T)
+        dz1 = dz1 * (a1 > 0)
+
+        dw1 = np.dot(a0.T, dz1) + self.lambd + W1 
+        db1 = np.sum(dz1, axis = 0, keepdims=True)
+        
+        #getting the gradients 
+        grads = {
+            'dW1':dw1,
+            'dW2':dw2,
+            'db1':db1,
+            'db2':db2
+        }
+
+        return grads
 
     def update_parameters(self, parameters, grads):
         pass 
