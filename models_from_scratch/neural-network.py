@@ -3,6 +3,7 @@ import numpy as np
 import cvxopt
 from extras import create_dataset , plot_contour
 
+#link to tutorial ==> https://www.youtube.com/watch?v=NJvojeoTnNM&list=PLhhyoLH6IjfxpLWyOgBt1sBzIapdRKZmj&index=8
 
 class NeuralNetwork():
     def __init__(self,X,y):
