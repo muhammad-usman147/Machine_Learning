@@ -1,7 +1,7 @@
 import numpy as np
 import cvxopt
 from extras import create_dataset , plot_contour
-
+#imports
 
 def linear_kernel(x,z):
     return np.dot(x,z.T)
